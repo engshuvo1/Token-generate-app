@@ -2,6 +2,7 @@ class TokenData {
   final String id;
   final String tokenNumber; // Required *, e.g. "001"
   final String serialNumber; // Required *, e.g. "A-015"
+  final String? venue; // Optional / selected venue or department name
   final String? customerName; // Optional, e.g. "Shuvo"
   final String? contactNumber; // Optional, e.g. "017XXXXXXXX"
   final String? amount; // Optional, e.g. "500"
@@ -15,6 +16,7 @@ class TokenData {
     required this.id,
     required this.tokenNumber,
     required this.serialNumber,
+    this.venue,
     this.customerName,
     this.contactNumber,
     this.amount,
@@ -25,11 +27,14 @@ class TokenData {
     this.phone,
   });
 
+  String? get department => venue;
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'tokenNumber': tokenNumber,
       'serialNumber': serialNumber,
+      'venue': venue,
       'customerName': customerName,
       'contactNumber': contactNumber,
       'amount': amount,
@@ -46,6 +51,7 @@ class TokenData {
       id: json['id'] as String,
       tokenNumber: json['tokenNumber'] as String,
       serialNumber: json['serialNumber'] as String? ?? '',
+      venue: (json['venue'] ?? json['department']) as String?,
       customerName: json['customerName'] as String?,
       contactNumber: json['contactNumber'] as String?,
       amount: json['amount'] as String?,
@@ -61,6 +67,7 @@ class TokenData {
     String? id,
     String? tokenNumber,
     String? serialNumber,
+    String? venue,
     String? customerName,
     String? contactNumber,
     String? amount,
@@ -74,6 +81,7 @@ class TokenData {
       id: id ?? this.id,
       tokenNumber: tokenNumber ?? this.tokenNumber,
       serialNumber: serialNumber ?? this.serialNumber,
+      venue: venue ?? this.venue,
       customerName: customerName ?? this.customerName,
       contactNumber: contactNumber ?? this.contactNumber,
       amount: amount ?? this.amount,

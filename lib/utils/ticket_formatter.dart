@@ -96,6 +96,18 @@ class TicketFormatter {
       linesAfter: 1,
     );
 
+    // Venue Name (if selected)
+    if (token.venue != null && token.venue!.trim().isNotEmpty) {
+      bytes += generator.text(
+        'VENUE: ${token.venue!.trim().toUpperCase()}',
+        styles: const PosStyles(
+          align: PosAlign.center,
+          bold: true,
+        ),
+        linesAfter: 1,
+      );
+    }
+
     bytes += generator.hr(ch: '-');
 
     // 6. Customer Name (Optional)
@@ -141,8 +153,9 @@ class TicketFormatter {
 
     // 9. QR Code (optional)
     if (includeQr) {
+      final venuePart = token.venue != null && token.venue!.isNotEmpty ? '|VENUE:${token.venue}' : '';
       bytes += generator.qrcode(
-        'TOKEN:${token.tokenNumber}|SN:${token.serialNumber}|TIME:${token.time}',
+        'TOKEN:${token.tokenNumber}|SN:${token.serialNumber}$venuePart|TIME:${token.time}',
         size: QRSize.size3,
       );
       bytes += generator.feed(1);

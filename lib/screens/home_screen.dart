@@ -40,6 +40,19 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isPrinting = false;
   final List<TokenData> _recentTokens = [];
 
+  final List<String> _venueList = [
+    'General',
+    'Cashier',
+    'Billing',
+    'Inquiry',
+    'Support',
+    'VIP',
+  ];
+  String _selectedVenue = 'General';
+
+  final List<String> _prefixList = ['A', 'B', 'C', 'D', 'T', 'VIP'];
+  String _selectedPrefix = 'A';
+
   @override
   void dispose() {
     _tokenController.dispose();
@@ -48,6 +61,62 @@ class _HomeScreenState extends State<HomeScreen> {
     _contactController.dispose();
     _amountController.dispose();
     super.dispose();
+  }
+
+  void _selectPrefix(String p) {
+    setState(() {
+      _selectedPrefix = p;
+      final current = _serialController.text.trim();
+      final hyphenIndex = current.indexOf('-');
+      if (hyphenIndex != -1) {
+        final rest = current.substring(hyphenIndex + 1);
+        _serialController.text = '$p-$rest';
+      } else {
+        _serialController.text = '$p-${_tokenController.text.trim()}';
+      }
+    });
+  }
+
+  Future<void> _showAddVenueDialog() async {
+    final controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Add Venue / Counter'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'e.g. Venue 1, Counter 2, VIP',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final val = controller.text.trim();
+              if (val.isNotEmpty) {
+                Navigator.pop(ctx, val);
+              }
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      setState(() {
+        if (!_venueList.contains(result)) {
+          _venueList.add(result);
+        }
+        _selectedVenue = result;
+      });
+    }
   }
 
   String _formatTimeOfDay(TimeOfDay tod) {
@@ -143,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             tokenNumber: tokenNumber,
             serialNumber: serialNumber,
+            venue: _selectedVenue.isEmpty ? null : _selectedVenue,
             customerName: _customerController.text.trim().isEmpty
                 ? null
                 : _customerController.text.trim(),
@@ -342,9 +412,33 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 16),
 
                   // 2. Serial Number * (Manual Input)
-                  const Text(
-                    'Serial Number *',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Serial Number *',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _prefixList.map((p) {
+                            final isSelected = _selectedPrefix == p;
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 4.0),
+                              child: ChoiceChip(
+                                label: Text(p),
+                                selected: isSelected,
+                                visualDensity: VisualDensity.compact,
+                                onSelected: (sel) {
+                                  if (sel) _selectPrefix(p);
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 6),
                   TextField(
@@ -365,6 +459,63 @@ class _HomeScreenState extends State<HomeScreen> {
                         vertical: 12,
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Venue Name (Button Selections)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Venue Name',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      if (_selectedVenue.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            _selectedVenue,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      ..._venueList.map((venue) {
+                        final isSelected = _selectedVenue == venue;
+                        return ChoiceChip(
+                          label: Text(venue),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedVenue = selected ? venue : '';
+                            });
+                          },
+                        );
+                      }),
+                      ActionChip(
+                        avatar: const Icon(Icons.add, size: 16),
+                        label: const Text('Add Venue'),
+                        onPressed: _showAddVenueDialog,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
 
@@ -584,7 +735,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    '${t.customerName != null ? "${t.customerName} • " : ""}${t.amount != null ? "Amount: ${t.amount} • " : ""}${t.time}',
+                    '${t.venue != null && t.venue!.isNotEmpty ? "Venue: ${t.venue} • " : ""}${t.customerName != null ? "${t.customerName} • " : ""}${t.amount != null ? "Amount: ${t.amount} • " : ""}${t.time}',
                     style: const TextStyle(fontSize: 11),
                   ),
                   trailing: IconButton(

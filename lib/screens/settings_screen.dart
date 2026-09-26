@@ -333,6 +333,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           color: Colors.black,
                         ),
                       ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'VENUE: GENERAL',
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         '----------------------------',
