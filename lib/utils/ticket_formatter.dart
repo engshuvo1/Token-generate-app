@@ -114,6 +114,17 @@ class TicketFormatter {
       );
     }
 
+    // Amount (Optional)
+    if (token.amount != null && token.amount!.trim().isNotEmpty) {
+      bytes += generator.text(
+        'Amount: ${token.amount!.trim()}',
+        styles: const PosStyles(
+          align: PosAlign.left,
+          bold: true,
+        ),
+      );
+    }
+
     // 8. Time * & Date
     bytes += generator.text(
       'Time: ${token.time}',

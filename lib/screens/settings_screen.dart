@@ -372,6 +372,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
+                          'Amount: 500',
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
                           'Time: 02:30 PM',
                           style: TextStyle(
                             fontFamily: 'monospace',

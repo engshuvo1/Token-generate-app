@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   );
   final TextEditingController _customerController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
 
   TimeOfDay _selectedTime = TimeOfDay.now();
   bool _isAutoTime = true;
@@ -43,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _serialController.dispose();
     _customerController.dispose();
     _contactController.dispose();
+    _amountController.dispose();
     super.dispose();
   }
 
@@ -145,6 +147,9 @@ class _HomeScreenState extends State<HomeScreen> {
             contactNumber: _contactController.text.trim().isEmpty
                 ? null
                 : _contactController.text.trim(),
+            amount: _amountController.text.trim().isEmpty
+                ? null
+                : _amountController.text.trim(),
             time: timeStr,
             date: DateTime.now(),
             shopName: widget.settingsService.shopName,
@@ -192,6 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // Reset customer details for next customer
               _customerController.clear();
               _contactController.clear();
+              _amountController.clear();
               _isAutoTime = true;
             });
           }
@@ -377,7 +383,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 5. Time * (Time Picker)
+                  // Amount (Optional)
+                  const Text(
+                    'Amount (Optional)',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: _amountController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      hintText: 'Example: 500',
+                      prefixIcon: const Icon(Icons.payments_outlined),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Time * (Time Picker)
                   const Text(
                     'Time *',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
@@ -525,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    '${t.customerName != null ? "${t.customerName} • " : ""}${t.time}',
+                    '${t.customerName != null ? "${t.customerName} • " : ""}${t.amount != null ? "Amount: ${t.amount} • " : ""}${t.time}',
                     style: const TextStyle(fontSize: 11),
                   ),
                   trailing: IconButton(
