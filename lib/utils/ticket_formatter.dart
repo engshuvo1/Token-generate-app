@@ -102,7 +102,7 @@ class TicketFormatter {
     if (token.customerName != null && token.customerName!.trim().isNotEmpty) {
       bytes += generator.text(
         'Customer: ${token.customerName!.trim()}',
-        styles: const PosStyles(align: PosAlign.left),
+        styles: const PosStyles(align: PosAlign.center),
       );
     }
 
@@ -110,7 +110,7 @@ class TicketFormatter {
     if (token.contactNumber != null && token.contactNumber!.trim().isNotEmpty) {
       bytes += generator.text(
         'Contact: ${token.contactNumber!.trim()}',
-        styles: const PosStyles(align: PosAlign.left),
+        styles: const PosStyles(align: PosAlign.center),
       );
     }
 
@@ -119,7 +119,7 @@ class TicketFormatter {
       bytes += generator.text(
         'Amount: ${token.amount!.trim()}',
         styles: const PosStyles(
-          align: PosAlign.left,
+          align: PosAlign.center,
           bold: true,
         ),
       );
@@ -129,13 +129,13 @@ class TicketFormatter {
     bytes += generator.text(
       'Time: ${token.time}',
       styles: const PosStyles(
-        align: PosAlign.left,
+        align: PosAlign.center,
         bold: true,
       ),
     );
     bytes += generator.text(
       'Date: ${formatDate(token.date)}',
-      styles: const PosStyles(align: PosAlign.left),
+      styles: const PosStyles(align: PosAlign.center),
       linesAfter: 1,
     );
 

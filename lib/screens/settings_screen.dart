@@ -346,9 +346,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                       // Customer Details
                       const Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: Text(
                           'Customer: Shuvo',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 12,
@@ -358,9 +359,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 2),
                       const Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: Text(
                           'Contact: 017XXXXXXXX',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 12,
@@ -370,9 +372,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 2),
                       const Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: Text(
                           'Amount: 500',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 12,
@@ -383,9 +386,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 2),
                       const Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: Text(
                           'Time: 02:30 PM',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 12,
