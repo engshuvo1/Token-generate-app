@@ -6,30 +6,27 @@ class TicketFormatter {
     final year = dt.year.toString().padLeft(4, '0');
     final month = dt.month.toString().padLeft(2, '0');
     final day = dt.day.toString().padLeft(2, '0');
-    final hour = dt.hour.toString().padLeft(2, '0');
-    final minute = dt.minute.toString().padLeft(2, '0');
-    final second = dt.second.toString().padLeft(2, '0');
-    return '$year-$month-$day $hour:$minute:$second';
+    return '$year-$month-$day';
   }
 
   static Future<List<int>> generateTokenTicket({
     required TokenData token,
     PaperSize paperSize = PaperSize.mm58,
-    String businessName = 'TOKEN MANAGEMENT',
-    String? subtitle = 'Queue Token System',
-    String? footerMessage = 'Please wait for your number to be called.',
+    required String shopName,
+    required String address,
+    required String phone,
     bool includeQr = true,
   }) async {
     final profile = await CapabilityProfile.load();
     final generator = Generator(paperSize, profile);
     List<int> bytes = [];
 
-    // Reset printer state
+    // Reset printer
     bytes += generator.reset();
 
-    // Business Header
+    // 1. Shop / Business Header
     bytes += generator.text(
-      token.businessName ?? businessName,
+      token.shopName ?? shopName,
       styles: const PosStyles(
         align: PosAlign.center,
         bold: true,
@@ -39,9 +36,20 @@ class TicketFormatter {
       linesAfter: 1,
     );
 
-    if (subtitle != null && subtitle.isNotEmpty) {
+    // 2. Address
+    final displayAddress = token.address ?? address;
+    if (displayAddress.isNotEmpty) {
       bytes += generator.text(
-        subtitle,
+        displayAddress,
+        styles: const PosStyles(align: PosAlign.center),
+      );
+    }
+
+    // 3. Phone
+    final displayPhone = token.phone ?? phone;
+    if (displayPhone.isNotEmpty) {
+      bytes += generator.text(
+        'Tel: $displayPhone',
         styles: const PosStyles(align: PosAlign.center),
         linesAfter: 1,
       );
@@ -50,33 +58,14 @@ class TicketFormatter {
     // Divider
     bytes += generator.hr(ch: '=');
 
-    // Department / Category
+    // 4. Token Number * (Prominent)
     bytes += generator.text(
-      'DEPARTMENT: ${token.department.toUpperCase()}',
-      styles: const PosStyles(
-        align: PosAlign.center,
-        bold: true,
-      ),
-      linesAfter: 1,
-    );
-
-    if (token.counter != null && token.counter!.isNotEmpty) {
-      bytes += generator.text(
-        'Counter: ${token.counter}',
-        styles: const PosStyles(align: PosAlign.center),
-      );
-    }
-
-    // Main Token Number Display
-    bytes += generator.feed(1);
-    bytes += generator.text(
-      'YOUR TOKEN',
+      'TOKEN NUMBER',
       styles: const PosStyles(
         align: PosAlign.center,
         bold: false,
       ),
     );
-
     bytes += generator.text(
       token.tokenNumber,
       styles: const PosStyles(
@@ -88,50 +77,72 @@ class TicketFormatter {
       linesAfter: 1,
     );
 
-    // Timestamp
-    bytes += generator.hr(ch: '-');
+    // 5. Serial Number *
     bytes += generator.text(
-      'Time: ${formatDate(token.timestamp)}',
-      styles: const PosStyles(align: PosAlign.center),
+      'SERIAL NO: ${token.serialNumber}',
+      styles: const PosStyles(
+        align: PosAlign.center,
+        bold: true,
+        height: PosTextSize.size1,
+        width: PosTextSize.size1,
+      ),
       linesAfter: 1,
     );
 
-    if (token.note != null && token.note!.isNotEmpty) {
+    bytes += generator.hr(ch: '-');
+
+    // 6. Customer Name (Optional)
+    if (token.customerName != null && token.customerName!.trim().isNotEmpty) {
       bytes += generator.text(
-        token.note!,
-        styles: const PosStyles(align: PosAlign.center),
-        linesAfter: 1,
+        'Customer: ${token.customerName!.trim()}',
+        styles: const PosStyles(align: PosAlign.left),
       );
     }
 
-    // QR Code (optional)
+    // 7. Contact Number (Optional)
+    if (token.contactNumber != null && token.contactNumber!.trim().isNotEmpty) {
+      bytes += generator.text(
+        'Contact: ${token.contactNumber!.trim()}',
+        styles: const PosStyles(align: PosAlign.left),
+      );
+    }
+
+    // 8. Time * & Date
+    bytes += generator.text(
+      'Time: ${token.time}',
+      styles: const PosStyles(
+        align: PosAlign.left,
+        bold: true,
+      ),
+    );
+    bytes += generator.text(
+      'Date: ${formatDate(token.date)}',
+      styles: const PosStyles(align: PosAlign.left),
+      linesAfter: 1,
+    );
+
+    // 9. QR Code (optional)
     if (includeQr) {
       bytes += generator.qrcode(
-        'TOKEN:${token.tokenNumber}|DEPT:${token.department}|DATE:${token.timestamp.millisecondsSinceEpoch}',
+        'TOKEN:${token.tokenNumber}|SN:${token.serialNumber}|TIME:${token.time}',
         size: QRSize.size3,
       );
       bytes += generator.feed(1);
     }
 
-    // Footer Message
-    if (footerMessage != null && footerMessage.isNotEmpty) {
-      bytes += generator.text(
-        footerMessage,
-        styles: const PosStyles(align: PosAlign.center),
-        linesAfter: 1,
-      );
-    }
-
+    // Footer notice
+    bytes += generator.hr(ch: '-');
     bytes += generator.text(
-      '*** THANK YOU ***',
-      styles: const PosStyles(
-        align: PosAlign.center,
-        bold: true,
-      ),
-      linesAfter: 1,
+      'Please wait for your call',
+      styles: const PosStyles(align: PosAlign.center),
+    );
+    bytes += generator.text(
+      'Thank you!',
+      styles: const PosStyles(align: PosAlign.center, bold: true),
+      linesAfter: 2,
     );
 
-    // Feed and cut paper
+    // Cut paper
     bytes += generator.feed(2);
     bytes += generator.cut();
 
@@ -140,6 +151,9 @@ class TicketFormatter {
 
   static Future<List<int>> generateTestTicket({
     PaperSize paperSize = PaperSize.mm58,
+    required String shopName,
+    required String address,
+    required String phone,
   }) async {
     final profile = await CapabilityProfile.load();
     final generator = Generator(paperSize, profile);
@@ -147,37 +161,42 @@ class TicketFormatter {
 
     bytes += generator.reset();
     bytes += generator.text(
-      'PRINTER TEST',
+      shopName,
       styles: const PosStyles(
         align: PosAlign.center,
         bold: true,
         height: PosTextSize.size2,
-        width: PosTextSize.size2,
       ),
       linesAfter: 1,
     );
 
-    bytes += generator.hr();
+    if (address.isNotEmpty) {
+      bytes += generator.text(address, styles: const PosStyles(align: PosAlign.center));
+    }
+    if (phone.isNotEmpty) {
+      bytes += generator.text('Tel: $phone', styles: const PosStyles(align: PosAlign.center));
+    }
+
+    bytes += generator.hr(ch: '=');
     bytes += generator.text(
-      'Paper Size: ${paperSize == PaperSize.mm58 ? '58mm' : '80mm'}',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-    bytes += generator.text(
-      'Status: CONNECTED OK',
+      'TEST PRINT SUCCESS',
       styles: const PosStyles(
         align: PosAlign.center,
         bold: true,
       ),
-    );
-    bytes += generator.text(
-      'Date: ${formatDate(DateTime.now())}',
-      styles: const PosStyles(align: PosAlign.center),
       linesAfter: 1,
     );
-
-    bytes += generator.hr(ch: '=');
     bytes += generator.text(
-      'Thermal Printer is working!',
+      'Paper: ${paperSize == PaperSize.mm58 ? '58mm' : '80mm'}',
+      styles: const PosStyles(align: PosAlign.center),
+    );
+    bytes += generator.text(
+      'Status: 🟢 Connected',
+      styles: const PosStyles(align: PosAlign.center),
+    );
+    bytes += generator.hr(ch: '-');
+    bytes += generator.text(
+      'Thermal printer is operating correctly.',
       styles: const PosStyles(align: PosAlign.center),
       linesAfter: 2,
     );

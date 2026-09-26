@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import '../services/printer_service.dart';
-import '../screens/printer_screen.dart';
 
 class PrinterStatusWidget extends StatelessWidget {
   final PrinterService printerService;
+  final VoidCallback? onTap;
 
   const PrinterStatusWidget({
     super.key,
     required this.printerService,
+    this.onTap,
   });
 
   @override
@@ -20,108 +21,82 @@ class PrinterStatusWidget extends StatelessWidget {
         final device = printerService.connectedDevice;
 
         final Color statusColor = isConnected
-            ? Colors.green
+            ? const Color(0xFF2E7D32)
             : isConnecting
                 ? Colors.orange
-                : Colors.redAccent;
+                : const Color(0xFFD32F2F);
 
-        final String statusText = isConnected
-            ? 'Connected: ${device?.name ?? "Thermal Printer"}'
+        final String statusLabel = isConnected
+            ? '🟢 Connected'
             : isConnecting
-                ? 'Connecting...'
-                : 'No Printer Connected';
+                ? '🟡 Connecting...'
+                : '🔴 Not Connected';
 
-        final String subText = isConnected
-            ? (device?.macAdress ?? '')
-            : 'Tap to configure Bluetooth printer';
+        final String statusDetail = isConnected
+            ? '${device?.name ?? "Bluetooth Printer"} (${device?.macAdress ?? ""})'
+            : isConnecting
+                ? 'Establishing Bluetooth link...'
+                : 'Tap to scan and connect Bluetooth thermal printer';
 
         return Card(
-          elevation: 2,
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          elevation: 1,
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
-              color: statusColor.withValues(alpha: 0.4),
+              color: statusColor.withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),
+          color: isConnected
+              ? const Color(0xFFE8F5E9)
+              : const Color(0xFFFFEBEE),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => PrinterScreen(printerService: printerService)),
-              );
-            },
+            onTap: onTap,
             child: Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isConnected ? Icons.print : Icons.print_disabled,
-                      color: statusColor,
-                      size: 24,
-                    ),
+                  Icon(
+                    isConnected ? Icons.print_rounded : Icons.print_disabled_rounded,
+                    color: statusColor,
+                    size: 26,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: statusColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                statusText,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          statusLabel,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: statusColor,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          subText,
+                          statusDetail,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: Colors.grey.shade800,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
-                  OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => PrinterScreen(printerService: printerService)),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  if (onTap != null)
+                    TextButton(
+                      onPressed: onTap,
+                      style: TextButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        foregroundColor: statusColor,
+                      ),
+                      child: Text(isConnected ? 'Manage' : 'Connect'),
                     ),
-                    child: Text(isConnected ? 'Change' : 'Connect'),
-                  ),
                 ],
               ),
             ),

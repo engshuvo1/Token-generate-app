@@ -1,34 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
-
-class AppSettings {
-  String businessName;
-  String subtitle;
-  String footerMessage;
-  PaperSize paperSize;
-  bool autoIncrement;
-  bool includeQrCode;
-  String counterName;
-
-  AppSettings({
-    this.businessName = 'SMART TOKEN QUEUE',
-    this.subtitle = 'Customer Care Service',
-    this.footerMessage = 'Please retain this slip until your number is called.',
-    this.paperSize = PaperSize.mm58,
-    this.autoIncrement = true,
-    this.includeQrCode = true,
-    this.counterName = 'Desk 1',
-  });
-}
+import '../services/settings_service.dart';
 
 class SettingsScreen extends StatefulWidget {
-  final AppSettings settings;
-  final ValueChanged<AppSettings> onSettingsChanged;
+  final SettingsService settingsService;
 
   const SettingsScreen({
     super.key,
-    required this.settings,
-    required this.onSettingsChanged,
+    required this.settingsService,
   });
 
   @override
@@ -36,174 +15,348 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late TextEditingController _businessController;
-  late TextEditingController _subtitleController;
-  late TextEditingController _footerController;
-  late TextEditingController _counterController;
-  late PaperSize _paperSize;
-  late bool _autoIncrement;
-  late bool _includeQrCode;
+  late TextEditingController _shopNameController;
+  late TextEditingController _addressController;
+  late TextEditingController _phoneController;
 
   @override
   void initState() {
     super.initState();
-    _businessController = TextEditingController(text: widget.settings.businessName);
-    _subtitleController = TextEditingController(text: widget.settings.subtitle);
-    _footerController = TextEditingController(text: widget.settings.footerMessage);
-    _counterController = TextEditingController(text: widget.settings.counterName);
-    _paperSize = widget.settings.paperSize;
-    _autoIncrement = widget.settings.autoIncrement;
-    _includeQrCode = widget.settings.includeQrCode;
+    _shopNameController = TextEditingController(text: widget.settingsService.shopName);
+    _addressController = TextEditingController(text: widget.settingsService.address);
+    _phoneController = TextEditingController(text: widget.settingsService.phone);
   }
 
   @override
   void dispose() {
-    _businessController.dispose();
-    _subtitleController.dispose();
-    _footerController.dispose();
-    _counterController.dispose();
+    _shopNameController.dispose();
+    _addressController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
-  void _saveSettings() {
-    final updated = AppSettings(
-      businessName: _businessController.text.trim().isEmpty
-          ? 'SMART TOKEN QUEUE'
-          : _businessController.text.trim(),
-      subtitle: _subtitleController.text.trim(),
-      footerMessage: _footerController.text.trim(),
-      counterName: _counterController.text.trim(),
-      paperSize: _paperSize,
-      autoIncrement: _autoIncrement,
-      includeQrCode: _includeQrCode,
-    );
-    widget.onSettingsChanged(updated);
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Settings saved successfully')),
+  void _onFieldChanged() {
+    widget.settingsService.updateSettings(
+      shopName: _shopNameController.text.trim(),
+      address: _addressController.text.trim(),
+      phone: _phoneController.text.trim(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Printer & Token Settings'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            tooltip: 'Save Settings',
-            onPressed: _saveSettings,
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Header & Business Info',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _businessController,
-            decoration: const InputDecoration(
-              labelText: 'Business / Organization Name',
-              hintText: 'e.g. City Hospital / Bank / Store',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.business),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _subtitleController,
-            decoration: const InputDecoration(
-              labelText: 'Sub-header / Branch',
-              hintText: 'e.g. Main Branch, Floor 2',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.subtitles),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _counterController,
-            decoration: const InputDecoration(
-              labelText: 'Counter / Desk Name',
-              hintText: 'e.g. Counter 1, Window A',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.desktop_windows),
-            ),
-          ),
-          const SizedBox(height: 24),
+    return AnimatedBuilder(
+      animation: widget.settingsService,
+      builder: (context, child) {
+        final copies = widget.settingsService.printCopies;
+        final paperSize = widget.settingsService.paperSize;
 
-          const Text(
-            'Ticket Details & Footer',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('⚙️ Settings'),
           ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _footerController,
-            maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Footer Notice Message',
-              hintText: 'e.g. Please retain this slip until your number is called.',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.message),
-            ),
-          ),
-          const SizedBox(height: 24),
+          body: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // 1. Shop / Business Name
+              const Text(
+                'Shop / Business Details',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _shopNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Shop / Business Name *',
+                  hintText: 'e.g. CITY MEDICAL CENTER',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.storefront_rounded),
+                ),
+                onChanged: (_) => _onFieldChanged(),
+              ),
+              const SizedBox(height: 12),
 
-          const Text(
-            'Printing Configuration',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: Column(
-              children: [
-                ListTile(
-                  title: const Text('Thermal Paper Width'),
-                  subtitle: Text(_paperSize == PaperSize.mm58 ? '58 mm (Standard Mobile)' : '80 mm (Desktop POS)'),
-                  trailing: SegmentedButton<PaperSize>(
-                    segments: const [
-                      ButtonSegment(value: PaperSize.mm58, label: Text('58mm')),
-                      ButtonSegment(value: PaperSize.mm80, label: Text('80mm')),
+              // 2. Address
+              TextField(
+                controller: _addressController,
+                decoration: const InputDecoration(
+                  labelText: 'Address',
+                  hintText: 'e.g. 123 Main Street, Dhaka',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.location_on_outlined),
+                ),
+                onChanged: (_) => _onFieldChanged(),
+              ),
+              const SizedBox(height: 12),
+
+              // 3. Phone
+              TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Phone',
+                  hintText: 'e.g. 017XXXXXXXX',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.phone_outlined),
+                ),
+                onChanged: (_) => _onFieldChanged(),
+              ),
+              const SizedBox(height: 20),
+
+              // 4. Print Copies & Options
+              const Text(
+                'Print Configuration',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 12),
+              Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Column(
+                  children: [
+                    // Print Copies Stepper
+                    ListTile(
+                      leading: const Icon(Icons.copy_rounded),
+                      title: const Text('Print Copies'),
+                      subtitle: Text('$copies copy${copies > 1 ? 'ies' : ''} per token print'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton.filledTonal(
+                            icon: const Icon(Icons.remove, size: 18),
+                            onPressed: copies > 1
+                                ? () => widget.settingsService.updateSettings(printCopies: copies - 1)
+                                : null,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Text(
+                              '$copies',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                          IconButton.filledTonal(
+                            icon: const Icon(Icons.add, size: 18),
+                            onPressed: () => widget.settingsService.updateSettings(printCopies: copies + 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 1),
+
+                    // Paper Width
+                    ListTile(
+                      leading: const Icon(Icons.aspect_ratio),
+                      title: const Text('Paper Size'),
+                      subtitle: Text(paperSize == PaperSize.mm58 ? '58 mm (Standard)' : '80 mm (Wide POS)'),
+                      trailing: SegmentedButton<PaperSize>(
+                        segments: const [
+                          ButtonSegment(value: PaperSize.mm58, label: Text('58mm')),
+                          ButtonSegment(value: PaperSize.mm80, label: Text('80mm')),
+                        ],
+                        selected: {paperSize},
+                        onSelectionChanged: (set) {
+                          widget.settingsService.updateSettings(paperSize: set.first);
+                        },
+                      ),
+                    ),
+                    const Divider(height: 1),
+
+                    // Auto-increment
+                    SwitchListTile(
+                      secondary: const Icon(Icons.auto_mode),
+                      title: const Text('Auto-Increment on Print'),
+                      subtitle: const Text('Advance token sequence automatically after printing'),
+                      value: widget.settingsService.autoIncrementToken,
+                      onChanged: (val) {
+                        widget.settingsService.updateSettings(autoIncrementToken: val);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // 5. Ticket Preview
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Ticket Preview',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      paperSize == PaperSize.mm58 ? '58mm Thermal' : '80mm Thermal',
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              // Thermal Receipt Visual Simulation
+              Center(
+                child: Container(
+                  width: paperSize == PaperSize.mm58 ? 280 : 340,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
                     ],
-                    selected: {_paperSize},
-                    onSelectionChanged: (set) {
-                      setState(() => _paperSize = set.first);
-                    },
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Shop Name
+                      Text(
+                        widget.settingsService.shopName.isEmpty
+                            ? 'SHOP NAME'
+                            : widget.settingsService.shopName.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.black,
+                        ),
+                      ),
+                      if (widget.settingsService.address.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.settingsService.address,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 11,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ],
+                      if (widget.settingsService.phone.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          'Tel: ${widget.settingsService.phone}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 11,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 8),
+                      Text(
+                        '============================',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.grey.shade400),
+                      ),
+                      const SizedBox(height: 6),
+
+                      const Text(
+                        'TOKEN NUMBER',
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 11,
+                          letterSpacing: 1,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        '001',
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'SERIAL NO: A-015',
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '----------------------------',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.grey.shade400),
+                      ),
+                      const SizedBox(height: 6),
+
+                      // Customer Details
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Customer: John Doe',
+                          style: TextStyle(fontFamily: 'monospace', fontSize: 12, color: Colors.black),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Contact: 017XXXXXXXX',
+                          style: TextStyle(fontFamily: 'monospace', fontSize: 12, color: Colors.black),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Time: 02:30 PM',
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '----------------------------',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.grey.shade400),
+                      ),
+                      const SizedBox(height: 6),
+
+                      const Text(
+                        'Please wait for your call',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.black54),
+                      ),
+                      const Text(
+                        '*** THANK YOU ***',
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: const Text('Auto-Increment on Print'),
-                  subtitle: const Text('Automatically advance token number after printing'),
-                  value: _autoIncrement,
-                  onChanged: (val) => setState(() => _autoIncrement = val),
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: const Text('Include QR Code'),
-                  subtitle: const Text('Print a verifiable QR code on each token slip'),
-                  value: _includeQrCode,
-                  onChanged: (val) => setState(() => _includeQrCode = val),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 32),
+            ],
           ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.save),
-            label: const Text('Save Settings'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-            onPressed: _saveSettings,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

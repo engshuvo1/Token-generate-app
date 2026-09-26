@@ -1,31 +1,40 @@
 class TokenData {
   final String id;
-  final String tokenNumber;
-  final String department;
-  final String? counter;
-  final DateTime timestamp;
-  final String? note;
-  final String? businessName;
+  final String tokenNumber; // Required *, e.g. "001"
+  final String serialNumber; // Required *, e.g. "A-015"
+  final String? customerName; // Optional, e.g. "John Doe"
+  final String? contactNumber; // Optional, e.g. "017XXXXXXXX"
+  final String time; // Required *, e.g. "02:30 PM"
+  final DateTime date;
+  final String? shopName;
+  final String? address;
+  final String? phone;
 
   const TokenData({
     required this.id,
     required this.tokenNumber,
-    required this.department,
-    this.counter,
-    required this.timestamp,
-    this.note,
-    this.businessName,
+    required this.serialNumber,
+    this.customerName,
+    this.contactNumber,
+    required this.time,
+    required this.date,
+    this.shopName,
+    this.address,
+    this.phone,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'tokenNumber': tokenNumber,
-      'department': department,
-      'counter': counter,
-      'timestamp': timestamp.toIso8601String(),
-      'note': note,
-      'businessName': businessName,
+      'serialNumber': serialNumber,
+      'customerName': customerName,
+      'contactNumber': contactNumber,
+      'time': time,
+      'date': date.toIso8601String(),
+      'shopName': shopName,
+      'address': address,
+      'phone': phone,
     };
   }
 
@@ -33,31 +42,40 @@ class TokenData {
     return TokenData(
       id: json['id'] as String,
       tokenNumber: json['tokenNumber'] as String,
-      department: json['department'] as String? ?? 'General',
-      counter: json['counter'] as String?,
-      timestamp: DateTime.parse(json['timestamp'] as String),
-      note: json['note'] as String?,
-      businessName: json['businessName'] as String?,
+      serialNumber: json['serialNumber'] as String? ?? '',
+      customerName: json['customerName'] as String?,
+      contactNumber: json['contactNumber'] as String?,
+      time: json['time'] as String? ?? '',
+      date: DateTime.parse(json['date'] as String),
+      shopName: json['shopName'] as String?,
+      address: json['address'] as String?,
+      phone: json['phone'] as String?,
     );
   }
 
   TokenData copyWith({
     String? id,
     String? tokenNumber,
-    String? department,
-    String? counter,
-    DateTime? timestamp,
-    String? note,
-    String? businessName,
+    String? serialNumber,
+    String? customerName,
+    String? contactNumber,
+    String? time,
+    DateTime? date,
+    String? shopName,
+    String? address,
+    String? phone,
   }) {
     return TokenData(
       id: id ?? this.id,
       tokenNumber: tokenNumber ?? this.tokenNumber,
-      department: department ?? this.department,
-      counter: counter ?? this.counter,
-      timestamp: timestamp ?? this.timestamp,
-      note: note ?? this.note,
-      businessName: businessName ?? this.businessName,
+      serialNumber: serialNumber ?? this.serialNumber,
+      customerName: customerName ?? this.customerName,
+      contactNumber: contactNumber ?? this.contactNumber,
+      time: time ?? this.time,
+      date: date ?? this.date,
+      shopName: shopName ?? this.shopName,
+      address: address ?? this.address,
+      phone: phone ?? this.phone,
     );
   }
 }
