@@ -137,18 +137,6 @@ class TicketFormatter {
       bytes += generator.feed(1);
     }
 
-    // Footer notice
-    bytes += generator.hr(ch: '-');
-    bytes += generator.text(
-      'Please wait for your call',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-    bytes += generator.text(
-      'Thank you!',
-      styles: const PosStyles(align: PosAlign.center, bold: true),
-      linesAfter: 2,
-    );
-
     // Cut paper
     bytes += generator.feed(2);
     bytes += generator.cut();

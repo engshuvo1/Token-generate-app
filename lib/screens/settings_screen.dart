@@ -381,34 +381,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '----------------------------',
-                        style: TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 11,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-
-                      const Text(
-                        'Please wait for your call',
-                        style: TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 11,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      const Text(
-                        '*** THANK YOU ***',
-                        style: TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
                     ],
                   ),
                 ),
