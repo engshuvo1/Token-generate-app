@@ -341,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   TextField(
                     controller: _customerController,
                     decoration: InputDecoration(
-                      hintText: 'Example: John Doe',
+                      hintText: 'Example: Shuvo',
                       prefixIcon: const Icon(Icons.person_outline_rounded),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),

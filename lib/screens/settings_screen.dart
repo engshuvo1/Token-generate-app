@@ -348,7 +348,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Customer: John Doe',
+                          'Customer: Shuvo',
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 12,
