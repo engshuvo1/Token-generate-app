@@ -199,6 +199,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         );
                       },
                     ),
+                    const Divider(height: 1),
+
+                    // Auto Cut Paper (Cutter Process)
+                    SwitchListTile(
+                      secondary: const Icon(Icons.content_cut_rounded),
+                      title: const Text('Auto Cut Paper (Auto Cutting)'),
+                      subtitle: const Text(
+                        'Execute paper cut command automatically after printing',
+                      ),
+                      value: widget.settingsService.autoCut,
+                      onChanged: (val) {
+                        widget.settingsService.updateSettings(
+                          autoCut: val,
+                        );
+                      },
+                    ),
+                    if (widget.settingsService.autoCut) ...[
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: const Icon(Icons.cut_outlined),
+                        title: const Text('Cutter Mode'),
+                        subtitle: Text(
+                          widget.settingsService.cutMode == PosCutMode.partial
+                              ? 'Partial Cut (Recommended - prevents paper jam)'
+                              : 'Full Cut (Completely detached)',
+                        ),
+                        trailing: SegmentedButton<PosCutMode>(
+                          segments: const [
+                            ButtonSegment(
+                              value: PosCutMode.partial,
+                              label: Text('Partial'),
+                            ),
+                            ButtonSegment(
+                              value: PosCutMode.full,
+                              label: Text('Full'),
+                            ),
+                          ],
+                          selected: {widget.settingsService.cutMode},
+                          onSelectionChanged: (set) {
+                            widget.settingsService.updateSettings(
+                              cutMode: set.first,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

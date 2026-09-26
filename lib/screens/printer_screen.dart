@@ -41,6 +41,8 @@ class _PrinterScreenState extends State<PrinterScreen> {
         shopName: _settingsService.organizationName,
         address: _settingsService.address,
         phone: _settingsService.phone,
+        autoCut: _settingsService.autoCut,
+        cutMode: _settingsService.cutMode,
       );
       final ok = await widget.printerService.printBytes(bytes);
       if (mounted) {

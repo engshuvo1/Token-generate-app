@@ -14,6 +14,8 @@ class SettingsService extends ChangeNotifier {
   PaperSize _paperSize = PaperSize.mm58;
   bool _includeQrCode = true;
   bool _autoIncrementToken = true;
+  bool _autoCut = true;
+  PosCutMode _cutMode = PosCutMode.partial;
 
   String get shopName => _shopName;
   String get organizationName => _organizationName;
@@ -23,6 +25,8 @@ class SettingsService extends ChangeNotifier {
   PaperSize get paperSize => _paperSize;
   bool get includeQrCode => _includeQrCode;
   bool get autoIncrementToken => _autoIncrementToken;
+  bool get autoCut => _autoCut;
+  PosCutMode get cutMode => _cutMode;
 
   void updateSettings({
     String? shopName,
@@ -33,6 +37,8 @@ class SettingsService extends ChangeNotifier {
     PaperSize? paperSize,
     bool? includeQrCode,
     bool? autoIncrementToken,
+    bool? autoCut,
+    PosCutMode? cutMode,
   }) {
     if (shopName != null) _shopName = shopName;
     if (organizationName != null) _organizationName = organizationName;
@@ -42,6 +48,8 @@ class SettingsService extends ChangeNotifier {
     if (paperSize != null) _paperSize = paperSize;
     if (includeQrCode != null) _includeQrCode = includeQrCode;
     if (autoIncrementToken != null) _autoIncrementToken = autoIncrementToken;
+    if (autoCut != null) _autoCut = autoCut;
+    if (cutMode != null) _cutMode = cutMode;
     notifyListeners();
   }
 }

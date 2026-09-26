@@ -23,6 +23,8 @@ class TicketFormatter {
     required String address,
     required String phone,
     bool includeQr = true,
+    bool autoCut = true,
+    PosCutMode cutMode = PosCutMode.partial,
   }) async {
     final profile = await getProfile();
     final generator = Generator(paperSize, profile);
@@ -161,9 +163,14 @@ class TicketFormatter {
       bytes += generator.feed(1);
     }
 
-    // Cut paper
-    bytes += generator.feed(2);
-    bytes += generator.cut();
+    // Paper cut or manual tear-off feed
+    if (autoCut) {
+      bytes += generator.cut(mode: cutMode);
+      // ESC/POS Function B Partial Cut (0x1D, 0x56, 0x42, 0x00) for modern POS hardware cutters
+      bytes += [0x1D, 0x56, 0x42, 0x00];
+    } else {
+      bytes += generator.feed(4);
+    }
 
     return bytes;
   }
@@ -173,6 +180,8 @@ class TicketFormatter {
     required String shopName,
     required String address,
     required String phone,
+    bool autoCut = true,
+    PosCutMode cutMode = PosCutMode.partial,
   }) async {
     final profile = await getProfile();
     final generator = Generator(paperSize, profile);
@@ -213,6 +222,10 @@ class TicketFormatter {
       'Status: 🟢 Connected',
       styles: const PosStyles(align: PosAlign.center),
     );
+    bytes += generator.text(
+      'Auto Cut: ${autoCut ? "🟢 Enabled" : "⚪ Disabled"}',
+      styles: const PosStyles(align: PosAlign.center),
+    );
     bytes += generator.hr(ch: '-');
     bytes += generator.text(
       'Thermal printer is operating correctly.',
@@ -220,8 +233,12 @@ class TicketFormatter {
       linesAfter: 2,
     );
 
-    bytes += generator.feed(2);
-    bytes += generator.cut();
+    if (autoCut) {
+      bytes += generator.cut(mode: cutMode);
+      bytes += [0x1D, 0x56, 0x42, 0x00];
+    } else {
+      bytes += generator.feed(4);
+    }
 
     return bytes;
   }

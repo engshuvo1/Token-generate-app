@@ -236,6 +236,8 @@ class _HomeScreenState extends State<HomeScreen> {
         address: widget.settingsService.address,
         phone: widget.settingsService.phone,
         includeQr: widget.settingsService.includeQrCode,
+        autoCut: widget.settingsService.autoCut,
+        cutMode: widget.settingsService.cutMode,
       );
 
       final copies = widget.settingsService.printCopies;
