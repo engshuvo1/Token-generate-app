@@ -9,6 +9,13 @@ class TicketFormatter {
     return '$year-$month-$day';
   }
 
+  static CapabilityProfile? _cachedProfile;
+
+  static Future<CapabilityProfile> getProfile() async {
+    _cachedProfile ??= await CapabilityProfile.load();
+    return _cachedProfile!;
+  }
+
   static Future<List<int>> generateTokenTicket({
     required TokenData token,
     PaperSize paperSize = PaperSize.mm58,
@@ -17,7 +24,7 @@ class TicketFormatter {
     required String phone,
     bool includeQr = true,
   }) async {
-    final profile = await CapabilityProfile.load();
+    final profile = await getProfile();
     final generator = Generator(paperSize, profile);
     List<int> bytes = [];
 
@@ -155,7 +162,7 @@ class TicketFormatter {
     required String address,
     required String phone,
   }) async {
-    final profile = await CapabilityProfile.load();
+    final profile = await getProfile();
     final generator = Generator(paperSize, profile);
     List<int> bytes = [];
 

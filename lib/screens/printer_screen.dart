@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+
 import '../services/printer_service.dart';
 import '../services/settings_service.dart';
 import '../utils/ticket_formatter.dart';
@@ -7,10 +8,7 @@ import '../utils/ticket_formatter.dart';
 class PrinterScreen extends StatefulWidget {
   final PrinterService printerService;
 
-  const PrinterScreen({
-    super.key,
-    required this.printerService,
-  });
+  const PrinterScreen({super.key, required this.printerService});
 
   @override
   State<PrinterScreen> createState() => _PrinterScreenState();
@@ -40,7 +38,7 @@ class _PrinterScreenState extends State<PrinterScreen> {
     try {
       final bytes = await TicketFormatter.generateTestTicket(
         paperSize: _settingsService.paperSize,
-        shopName: _settingsService.shopName,
+        shopName: _settingsService.organizationName,
         address: _settingsService.address,
         phone: _settingsService.phone,
       );
@@ -48,7 +46,11 @@ class _PrinterScreenState extends State<PrinterScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(ok ? 'Test ticket printed successfully!' : 'Failed to send test print data'),
+            content: Text(
+              ok
+                  ? 'Test ticket printed successfully!'
+                  : 'Failed to send test print data',
+            ),
             backgroundColor: ok ? Colors.green : Colors.red,
           ),
         );
@@ -56,7 +58,10 @@ class _PrinterScreenState extends State<PrinterScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Test print error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Test print error: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -74,7 +79,9 @@ class _PrinterScreenState extends State<PrinterScreen> {
         final devices = widget.printerService.availableDevices;
         final connectedDevice = widget.printerService.connectedDevice;
         final isConnected = widget.printerService.isConnected;
-        final isConnecting = widget.printerService.connectionState == PrinterConnectionState.connecting;
+        final isConnecting =
+            widget.printerService.connectionState ==
+            PrinterConnectionState.connecting;
 
         return Scaffold(
           appBar: AppBar(
@@ -92,11 +99,15 @@ class _PrinterScreenState extends State<PrinterScreen> {
             children: [
               // Connection Status Header Banner
               Card(
-                color: isConnected ? const Color(0xFFE8F5E9) : const Color(0xFFFFEBEE),
+                color: isConnected
+                    ? const Color(0xFFE8F5E9)
+                    : const Color(0xFFFFEBEE),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
-                    color: isConnected ? Colors.green.shade400 : Colors.red.shade300,
+                    color: isConnected
+                        ? Colors.green.shade400
+                        : Colors.red.shade300,
                   ),
                 ),
                 child: Padding(
@@ -106,7 +117,9 @@ class _PrinterScreenState extends State<PrinterScreen> {
                       Row(
                         children: [
                           Icon(
-                            isConnected ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                            isConnected
+                                ? Icons.check_circle_rounded
+                                : Icons.cancel_rounded,
                             color: isConnected ? Colors.green : Colors.red,
                             size: 32,
                           ),
@@ -116,11 +129,15 @@ class _PrinterScreenState extends State<PrinterScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  isConnected ? '🟢 Connected' : '🔴 Not Connected',
+                                  isConnected
+                                      ? '🟢 Connected'
+                                      : '🔴 Not Connected',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: isConnected ? Colors.green.shade900 : Colors.red.shade900,
+                                    color: isConnected
+                                        ? Colors.green.shade900
+                                        : Colors.red.shade900,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -144,9 +161,16 @@ class _PrinterScreenState extends State<PrinterScreen> {
                           children: [
                             Expanded(
                               child: OutlinedButton.icon(
-                                icon: const Icon(Icons.link_off, color: Colors.red),
-                                label: const Text('Disconnect', style: TextStyle(color: Colors.red)),
-                                onPressed: () => widget.printerService.disconnect(),
+                                icon: const Icon(
+                                  Icons.link_off,
+                                  color: Colors.red,
+                                ),
+                                label: const Text(
+                                  'Disconnect',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () =>
+                                    widget.printerService.disconnect(),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -156,7 +180,10 @@ class _PrinterScreenState extends State<PrinterScreen> {
                                     ? const SizedBox(
                                         width: 16,
                                         height: 16,
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
                                       )
                                     : const Icon(Icons.receipt_long),
                                 label: const Text('Test Print'),
@@ -177,17 +204,24 @@ class _PrinterScreenState extends State<PrinterScreen> {
                 onPressed: _isScanning ? null : _scanPrinters,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 icon: _isScanning
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Icon(Icons.bluetooth_searching),
                 label: Text(
-                  _isScanning ? 'Scanning Bluetooth Printers...' : 'Scan Bluetooth Printers',
+                  _isScanning
+                      ? 'Scanning Bluetooth Printers...'
+                      : 'Scan Bluetooth Printers',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -220,7 +254,11 @@ class _PrinterScreenState extends State<PrinterScreen> {
                   ),
                   child: Column(
                     children: [
-                      Icon(Icons.print_disabled_outlined, size: 48, color: Colors.grey[400]),
+                      Icon(
+                        Icons.print_disabled_outlined,
+                        size: 48,
+                        color: Colors.grey[400],
+                      ),
                       const SizedBox(height: 12),
                       const Text(
                         'No Bluetooth thermal printers found',
@@ -237,7 +275,8 @@ class _PrinterScreenState extends State<PrinterScreen> {
                 )
               else
                 ...devices.map((BluetoothInfo device) {
-                  final isCurrent = connectedDevice?.macAdress == device.macAdress;
+                  final isCurrent =
+                      connectedDevice?.macAdress == device.macAdress;
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
@@ -256,7 +295,9 @@ class _PrinterScreenState extends State<PrinterScreen> {
                       title: Text(
                         device.name.isEmpty ? 'Thermal Printer' : device.name,
                         style: TextStyle(
-                          fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
+                          fontWeight: isCurrent
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                         ),
                       ),
                       subtitle: Text(
@@ -265,7 +306,8 @@ class _PrinterScreenState extends State<PrinterScreen> {
                       ),
                       trailing: isCurrent
                           ? OutlinedButton(
-                              onPressed: () => widget.printerService.disconnect(),
+                              onPressed: () =>
+                                  widget.printerService.disconnect(),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.red,
                                 side: const BorderSide(color: Colors.red),

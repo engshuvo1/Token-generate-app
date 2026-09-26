@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
+
 import '../services/settings_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   final SettingsService settingsService;
 
-  const SettingsScreen({
-    super.key,
-    required this.settingsService,
-  });
+  const SettingsScreen({super.key, required this.settingsService});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -22,9 +20,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _shopNameController = TextEditingController(text: widget.settingsService.shopName);
-    _addressController = TextEditingController(text: widget.settingsService.address);
-    _phoneController = TextEditingController(text: widget.settingsService.phone);
+    _shopNameController = TextEditingController(
+      text: widget.settingsService.shopName,
+    );
+    _addressController = TextEditingController(
+      text: widget.settingsService.address,
+    );
+    _phoneController = TextEditingController(
+      text: widget.settingsService.phone,
+    );
   }
 
   @override
@@ -37,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _onFieldChanged() {
     widget.settingsService.updateSettings(
-      shopName: _shopNameController.text.trim(),
+      organizationName: _shopNameController.text.trim(),
       address: _addressController.text.trim(),
       phone: _phoneController.text.trim(),
     );
@@ -52,9 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final paperSize = widget.settingsService.paperSize;
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('⚙️ Settings'),
-          ),
+          appBar: AppBar(title: const Text('⚙️ Settings')),
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -68,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 controller: _shopNameController,
                 decoration: const InputDecoration(
                   labelText: 'Shop / Business Name *',
-                  hintText: 'e.g. CITY MEDICAL CENTER',
+                  hintText: 'e.g. eng_shuvo',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.storefront_rounded),
                 ),
@@ -110,33 +112,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 12),
               Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Column(
                   children: [
                     // Print Copies Stepper
                     ListTile(
                       leading: const Icon(Icons.copy_rounded),
                       title: const Text('Print Copies'),
-                      subtitle: Text('$copies copy${copies > 1 ? 'ies' : ''} per token print'),
+                      subtitle: Text(
+                        '$copies copy${copies > 1 ? 'ies' : ''} per token print',
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton.filledTonal(
                             icon: const Icon(Icons.remove, size: 18),
                             onPressed: copies > 1
-                                ? () => widget.settingsService.updateSettings(printCopies: copies - 1)
+                                ? () => widget.settingsService.updateSettings(
+                                    printCopies: copies - 1,
+                                  )
                                 : null,
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
                               '$copies',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                           IconButton.filledTonal(
                             icon: const Icon(Icons.add, size: 18),
-                            onPressed: () => widget.settingsService.updateSettings(printCopies: copies + 1),
+                            onPressed: () => widget.settingsService
+                                .updateSettings(printCopies: copies + 1),
                           ),
                         ],
                       ),
@@ -147,15 +159,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       leading: const Icon(Icons.aspect_ratio),
                       title: const Text('Paper Size'),
-                      subtitle: Text(paperSize == PaperSize.mm58 ? '58 mm (Standard)' : '80 mm (Wide POS)'),
+                      subtitle: Text(
+                        paperSize == PaperSize.mm58
+                            ? '58 mm (Standard)'
+                            : '80 mm (Wide POS)',
+                      ),
                       trailing: SegmentedButton<PaperSize>(
                         segments: const [
-                          ButtonSegment(value: PaperSize.mm58, label: Text('58mm')),
-                          ButtonSegment(value: PaperSize.mm80, label: Text('80mm')),
+                          ButtonSegment(
+                            value: PaperSize.mm58,
+                            label: Text('58mm'),
+                          ),
+                          ButtonSegment(
+                            value: PaperSize.mm80,
+                            label: Text('80mm'),
+                          ),
                         ],
                         selected: {paperSize},
                         onSelectionChanged: (set) {
-                          widget.settingsService.updateSettings(paperSize: set.first);
+                          widget.settingsService.updateSettings(
+                            paperSize: set.first,
+                          );
                         },
                       ),
                     ),
@@ -165,10 +189,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SwitchListTile(
                       secondary: const Icon(Icons.auto_mode),
                       title: const Text('Auto-Increment on Print'),
-                      subtitle: const Text('Advance token sequence automatically after printing'),
+                      subtitle: const Text(
+                        'Advance token sequence automatically after printing',
+                      ),
                       value: widget.settingsService.autoIncrementToken,
                       onChanged: (val) {
-                        widget.settingsService.updateSettings(autoIncrementToken: val);
+                        widget.settingsService.updateSettings(
+                          autoIncrementToken: val,
+                        );
                       },
                     ),
                   ],
@@ -185,14 +213,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      paperSize == PaperSize.mm58 ? '58mm Thermal' : '80mm Thermal',
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                      paperSize == PaperSize.mm58
+                          ? '58mm Thermal'
+                          : '80mm Thermal',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -219,11 +255,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Shop Name
+                      // Organization Name
                       Text(
-                        widget.settingsService.shopName.isEmpty
-                            ? 'SHOP NAME'
-                            : widget.settingsService.shopName.toUpperCase(),
+                        widget.settingsService.organizationName.isEmpty
+                            ? 'ORGANIZATION NAME'
+                            : widget.settingsService.organizationName
+                                  .toUpperCase(),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: 'monospace',
@@ -259,7 +296,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 8),
                       Text(
                         '============================',
-                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.grey.shade400),
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 11,
+                          color: Colors.grey.shade400,
+                        ),
                       ),
                       const SizedBox(height: 6),
 
@@ -295,7 +336,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 8),
                       Text(
                         '----------------------------',
-                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.grey.shade400),
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 11,
+                          color: Colors.grey.shade400,
+                        ),
                       ),
                       const SizedBox(height: 6),
 
@@ -304,7 +349,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Customer: John Doe',
-                          style: TextStyle(fontFamily: 'monospace', fontSize: 12, color: Colors.black),
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -312,7 +361,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Contact: 017XXXXXXXX',
-                          style: TextStyle(fontFamily: 'monospace', fontSize: 12, color: Colors.black),
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -331,13 +384,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 8),
                       Text(
                         '----------------------------',
-                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.grey.shade400),
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 11,
+                          color: Colors.grey.shade400,
+                        ),
                       ),
                       const SizedBox(height: 6),
 
                       const Text(
                         'Please wait for your call',
-                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.black54),
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 11,
+                          color: Colors.black54,
+                        ),
                       ),
                       const Text(
                         '*** THANK YOU ***',

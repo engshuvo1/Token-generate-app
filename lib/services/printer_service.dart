@@ -29,6 +29,14 @@ class PrinterService extends ChangeNotifier {
   bool get isConnected => _connectionState == PrinterConnectionState.connected;
 
   Future<void> checkStatus() async {
+    if (kIsWeb) {
+      _hasPermission = true;
+      _isBluetoothEnabled = true;
+      _statusMessage = 'Web mode (Virtual printer ready)';
+      notifyListeners();
+      return;
+    }
+
     try {
       _hasPermission = await PrintBluetoothThermal.isPermissionBluetoothGranted;
       _isBluetoothEnabled = await PrintBluetoothThermal.bluetoothEnabled;
@@ -48,6 +56,16 @@ class PrinterService extends ChangeNotifier {
   }
 
   Future<List<BluetoothInfo>> scanDevices() async {
+    if (kIsWeb) {
+      _availableDevices = [
+        BluetoothInfo(name: 'Virtual Thermal Printer (58mm)', macAdress: '00:11:22:33:44:55'),
+        BluetoothInfo(name: 'Virtual POS Printer (80mm)', macAdress: '66:77:88:99:AA:BB'),
+      ];
+      _statusMessage = 'Found ${_availableDevices.length} virtual printer(s)';
+      notifyListeners();
+      return _availableDevices;
+    }
+
     try {
       await checkStatus();
       if (!_isBluetoothEnabled) {
@@ -73,6 +91,15 @@ class PrinterService extends ChangeNotifier {
     _statusMessage = 'Connecting to ${device.name}...';
     notifyListeners();
 
+    if (kIsWeb) {
+      await Future.delayed(const Duration(milliseconds: 400));
+      _connectedDevice = device;
+      _connectionState = PrinterConnectionState.connected;
+      _statusMessage = 'Connected to ${device.name}';
+      notifyListeners();
+      return true;
+    }
+
     try {
       final bool result = await PrintBluetoothThermal.connect(
         macPrinterAddress: device.macAdress,
@@ -97,6 +124,14 @@ class PrinterService extends ChangeNotifier {
   }
 
   Future<bool> disconnect() async {
+    if (kIsWeb) {
+      _connectedDevice = null;
+      _connectionState = PrinterConnectionState.disconnected;
+      _statusMessage = 'Printer disconnected';
+      notifyListeners();
+      return true;
+    }
+
     try {
       final bool result = await PrintBluetoothThermal.disconnect;
       _connectedDevice = null;
@@ -116,6 +151,12 @@ class PrinterService extends ChangeNotifier {
       _statusMessage = 'No printer connected!';
       notifyListeners();
       return false;
+    }
+
+    if (kIsWeb) {
+      _statusMessage = 'Printed successfully (Virtual Device)';
+      notifyListeners();
+      return true;
     }
 
     try {

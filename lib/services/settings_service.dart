@@ -7,7 +7,8 @@ class SettingsService extends ChangeNotifier {
   SettingsService._internal();
 
   String _shopName = 'MY SERVICE CENTER';
-  String _address = '123 Business Avenue, Suite 100';
+  String _organizationName = 'MY SERVICE CENTER';
+  String _address = '';
   String _phone = '+880 1700-000000';
   int _printCopies = 1;
   PaperSize _paperSize = PaperSize.mm58;
@@ -15,6 +16,7 @@ class SettingsService extends ChangeNotifier {
   bool _autoIncrementToken = true;
 
   String get shopName => _shopName;
+  String get organizationName => _organizationName;
   String get address => _address;
   String get phone => _phone;
   int get printCopies => _printCopies;
@@ -24,6 +26,7 @@ class SettingsService extends ChangeNotifier {
 
   void updateSettings({
     String? shopName,
+    String? organizationName,
     String? address,
     String? phone,
     int? printCopies,
@@ -32,6 +35,7 @@ class SettingsService extends ChangeNotifier {
     bool? autoIncrementToken,
   }) {
     if (shopName != null) _shopName = shopName;
+    if (organizationName != null) _organizationName = organizationName;
     if (address != null) _address = address;
     if (phone != null) _phone = phone;
     if (printCopies != null && printCopies > 0) _printCopies = printCopies;

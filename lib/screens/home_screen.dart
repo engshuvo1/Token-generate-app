@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/token_data.dart';
 import '../services/printer_service.dart';
 import '../services/settings_service.dart';
@@ -22,8 +23,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _tokenController = TextEditingController(text: '001');
-  final TextEditingController _serialController = TextEditingController(text: 'A-015');
+  final TextEditingController _tokenController = TextEditingController(
+    text: '001',
+  );
+  final TextEditingController _serialController = TextEditingController(
+    text: 'A-015',
+  );
   final TextEditingController _customerController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
 
@@ -70,19 +75,31 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _printToken({TokenData? reprintToken}) async {
-    final tokenNumber = reprintToken?.tokenNumber ?? _tokenController.text.trim();
-    final serialNumber = reprintToken?.serialNumber ?? _serialController.text.trim();
-    final timeStr = reprintToken?.time ?? (_isAutoTime ? _formatTimeOfDay(TimeOfDay.now()) : _formatTimeOfDay(_selectedTime));
+    final tokenNumber =
+        reprintToken?.tokenNumber ?? _tokenController.text.trim();
+    final serialNumber =
+        reprintToken?.serialNumber ?? _serialController.text.trim();
+    final timeStr =
+        reprintToken?.time ??
+        (_isAutoTime
+            ? _formatTimeOfDay(TimeOfDay.now())
+            : _formatTimeOfDay(_selectedTime));
 
     if (tokenNumber.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a Token Number *'), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text('Please enter a Token Number *'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
     if (serialNumber.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a Serial Number *'), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text('Please enter a Serial Number *'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -92,10 +109,18 @@ class _HomeScreenState extends State<HomeScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('🔴 Printer Not Connected'),
-          content: const Text('No Bluetooth thermal printer is connected.\nWould you like to connect a printer now?'),
+          content: const Text(
+            'No Bluetooth thermal printer is connected.\nWould you like to connect a printer now?',
+          ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-            ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Go to Printer')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Go to Printer'),
+            ),
           ],
         ),
       );
@@ -108,13 +133,18 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _isPrinting = true);
 
     try {
-      final tokenData = reprintToken ??
+      final tokenData =
+          reprintToken ??
           TokenData(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             tokenNumber: tokenNumber,
             serialNumber: serialNumber,
-            customerName: _customerController.text.trim().isEmpty ? null : _customerController.text.trim(),
-            contactNumber: _contactController.text.trim().isEmpty ? null : _contactController.text.trim(),
+            customerName: _customerController.text.trim().isEmpty
+                ? null
+                : _customerController.text.trim(),
+            contactNumber: _contactController.text.trim().isEmpty
+                ? null
+                : _contactController.text.trim(),
             time: timeStr,
             date: DateTime.now(),
             shopName: widget.settingsService.shopName,
@@ -146,7 +176,9 @@ class _HomeScreenState extends State<HomeScreen> {
         if (allSuccessful) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Printed $copies ticket(s) for Token #$tokenNumber'),
+              content: Text(
+                'Printed $copies ticket(s) for Token #$tokenNumber',
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -166,7 +198,9 @@ class _HomeScreenState extends State<HomeScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Print issue: ${widget.printerService.statusMessage}'),
+              content: Text(
+                'Print issue: ${widget.printerService.statusMessage}',
+              ),
               backgroundColor: Colors.orange,
             ),
           );
@@ -175,7 +209,10 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error printing ticket: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error printing ticket: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -187,12 +224,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentTimeFormatted = _isAutoTime ? _formatTimeOfDay(TimeOfDay.now()) : _formatTimeOfDay(_selectedTime);
+    final currentTimeFormatted = _isAutoTime
+        ? _formatTimeOfDay(TimeOfDay.now())
+        : _formatTimeOfDay(_selectedTime);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('🏠 Home / Token Printer'),
-      ),
+      appBar: AppBar(title: const Text('🏠 Home / Token Printer')),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
@@ -206,7 +243,9 @@ class _HomeScreenState extends State<HomeScreen> {
           // Main Form Card
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             elevation: 2,
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -219,7 +258,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       const Text(
                         'Token Number *',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
                       Row(
                         children: [
@@ -252,8 +294,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: InputDecoration(
                       hintText: 'Example: 001',
                       prefixIcon: const Icon(Icons.confirmation_number_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -267,12 +314,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   TextField(
                     controller: _serialController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Example: A-015',
                       prefixIcon: const Icon(Icons.tag_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -288,8 +343,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: InputDecoration(
                       hintText: 'Example: John Doe',
                       prefixIcon: const Icon(Icons.person_outline_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -306,8 +366,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: InputDecoration(
                       hintText: 'Example: 017XXXXXXXX',
                       prefixIcon: const Icon(Icons.phone_outlined),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -322,14 +387,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: _pickTime,
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade400),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.access_time_rounded, color: Colors.blue),
+                          const Icon(
+                            Icons.access_time_rounded,
+                            color: Colors.blue,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -341,9 +412,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: _isAutoTime ? Colors.green.shade50 : Colors.blue.shade50,
+                              color: _isAutoTime
+                                  ? Colors.green.shade50
+                                  : Colors.blue.shade50,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -351,7 +427,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                color: _isAutoTime ? Colors.green.shade800 : Colors.blue.shade800,
+                                color: _isAutoTime
+                                    ? Colors.green.shade800
+                                    : Colors.blue.shade800,
                               ),
                             ),
                           ),
@@ -372,14 +450,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1E56A0),
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         elevation: 3,
                       ),
                       icon: _isPrinting
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
                             )
                           : const Icon(Icons.print_rounded, size: 24),
                       label: Text(
@@ -406,7 +489,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     'Recent Printed Tokens (${_recentTokens.length})',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                   TextButton(
                     onPressed: () => setState(() => _recentTokens.clear()),
@@ -418,14 +504,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ..._recentTokens.map((t) {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: ListTile(
                   dense: true,
                   leading: CircleAvatar(
                     backgroundColor: Colors.blue.shade100,
                     child: Text(
                       t.tokenNumber,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: Colors.blue,
+                      ),
                     ),
                   ),
                   title: Text(
@@ -439,7 +531,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   trailing: IconButton(
                     icon: const Icon(Icons.replay_rounded, size: 20),
                     tooltip: 'Reprint',
-                    onPressed: _isPrinting ? null : () => _printToken(reprintToken: t),
+                    onPressed: _isPrinting
+                        ? null
+                        : () => _printToken(reprintToken: t),
                   ),
                 ),
               );
