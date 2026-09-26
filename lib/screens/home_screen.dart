@@ -5,6 +5,8 @@ import '../services/printer_service.dart';
 import '../services/settings_service.dart';
 import '../utils/ticket_formatter.dart';
 import '../widgets/printer_status.dart';
+import 'printer_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final PrinterService printerService;
@@ -235,7 +237,35 @@ class _HomeScreenState extends State<HomeScreen> {
         : _formatTimeOfDay(_selectedTime);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('🏠 Home / Token Printer')),
+      appBar: AppBar(
+        title: const Text('🏠 Home / Token Printer'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.print_rounded),
+            tooltip: 'Printer',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PrinterScreen(printerService: widget.printerService),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_rounded),
+            tooltip: 'Settings',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SettingsScreen(settingsService: widget.settingsService),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
